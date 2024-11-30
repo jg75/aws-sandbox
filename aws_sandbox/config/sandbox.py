@@ -27,7 +27,3 @@ class Sandbox(Params):
     def __init__(self) -> None:
         """Initialize the Params."""
         super().__init__()
-
-    def __repr__(self) -> str:
-        """Return a string representation of the Params."""
-        return f"{self.__class__.__name__}(vpc={self.vpc})"
