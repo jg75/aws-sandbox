@@ -22,7 +22,12 @@ class Main:
         self.env = self.get_env()
 
         for stack in Constants.stacks:
-            stack["class"](self.app, stack["name"], self.params, env=self.env)
+            tags: dict = {
+                "Environment": self.stage,
+                "Project": Constants.project,
+            }
+
+            stack["class"](self.app, stack["name"], self.params, env=self.env, tags=tags)
 
         self.app.synth()
 
