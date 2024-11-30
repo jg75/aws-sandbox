@@ -1,15 +1,33 @@
-import aws_cdk as core
-import aws_cdk.assertions as assertions
+from aws_cdk.assertions import Template, Match
 
-from aws_sandbox.aws_sandbox_stack import AwsSandboxStack
+from aws_sandbox.stacks.aws_sandbox_stack import AwsSandboxStack
 
-# example tests. To run these tests, uncomment this file along with the example
-# resource in aws_sandbox/aws_sandbox_stack.py
-def test_sqs_queue_created():
-    app = core.App()
-    stack = AwsSandboxStack(app, "aws-sandbox")
-    template = assertions.Template.from_stack(stack)
 
-#     template.has_resource_properties("AWS::SQS::Queue", {
-#         "VisibilityTimeout": 300
-#     })
+def test_vpc_created(stack) -> None:
+    """Test VPC creation with expected properties."""
+    template = Template.from_stack(stack)
+    
+    # Test VPC resource exists with expected properties
+    template.has_resource_properties("AWS::EC2::VPC", {
+        "CidrBlock": "10.0.0.0/16",
+        "EnableDnsHostnames": True,
+        "EnableDnsSupport": True,
+    })
+    
+    # Find all subnet resources
+    subnet_resources = template.find_resources("AWS::EC2::Subnet")
+    
+    # Test that we have the expected number of subnets
+    assert len(subnet_resources) == 2
+    
+    # Test that at least one subnet matches our public subnet properties
+    template.has_resource_properties("AWS::EC2::Subnet", {
+        "CidrBlock": Match.string_like_regexp("10.0.*"),
+        "MapPublicIpOnLaunch": True,
+    })
+
+    # Test that at least one subnet matches our private subnet properties
+    template.has_resource_properties("AWS::EC2::Subnet", {
+        "CidrBlock": Match.string_like_regexp("10.0.*"),
+        "MapPublicIpOnLaunch": False,
+    })

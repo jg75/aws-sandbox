@@ -15,6 +15,11 @@
     ]
   },
   "context": {
+    "stage": "sandbox",
+    "sandbox": {
+      "account": "525639853565",
+      "region": "us-east-1"
+    },
     "@aws-cdk/aws-lambda:recognizeLayerVersion": true,
     "@aws-cdk/core:checkSecretUsage": true,
     "@aws-cdk/core:target-partitions": [
