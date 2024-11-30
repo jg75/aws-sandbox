@@ -34,12 +34,7 @@ class Test(Params):
 
 
 @pytest.fixture(scope="session")
-def app() -> App:
-    """Create a fresh CDK app fixture."""
-    return App()
-
-@pytest.fixture
-def mock_context() -> dict:
+def mock_context():
     """Fixture to provide mock context values."""
     return {
         "stage": "test",
@@ -55,9 +50,18 @@ def mock_params():
     return Test()
 
 @pytest.fixture
+def app():
+    """Create a fresh CDK app fixture."""
+    return App()
+
+@pytest.fixture
 def stack(app, mock_context, mock_params):
     """Create a stack fixture."""
     app.node.set_context("stage", mock_context["stage"])
     app.node.set_context("test", mock_context["test"])
-    env = Environment(**mock_context["test"])
+    
+    env = Environment(
+        account=mock_context["test"]["account"],
+        region=mock_context["test"]["region"]
+    )
     return AwsSandboxStack(app, "aws-sandbox", mock_params, env=env)
